@@ -1,0 +1,6 @@
+[package]
+name = "assert_all_eq"
+version = "0.1.0"
+authors = ["Pazzaz <pazzaz.sundqvist@gmail.com>"]
+
+[dependencies]
