@@ -34,6 +34,8 @@ macro_rules! assert_all_eq {
     ($left:expr , $right:expr ,; $($arg:tt)+) => ({ assert_eq!($left, $right, $($arg)+) });
 
     ( $first:expr , $( $x:expr ),+ ;) => ({ assert_all_eq!( $first $( ,$x )+) });
+    ( $first:expr , $( $x:expr ),+ ,;) => ({ assert_all_eq!( $first $( ,$x )+) });
+    ( $first:expr , $( $x:expr ),+ ,) => ({ assert_all_eq!( $first $( ,$x )+) });
     ( $first:expr , $( $x:expr ),+ ,; $($arg:tt)+) => ({ assert_all_eq!($first $( ,$x )+; $($arg)+) });
     ( $first:expr , $( $x:expr ),+) => ({
         use std::fmt::Debug;
