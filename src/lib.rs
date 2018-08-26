@@ -25,12 +25,14 @@
 /// ```
 #[macro_export]
 macro_rules! assert_all_eq {
-    ($left:expr , $right:expr) =>    ({ assert_eq!($left, $right) });
-    ($left:expr , $right:expr ;) =>  ({ assert_eq!($left, $right) });
-    ($left:expr , $right:expr ,) =>  ({ assert_eq!($left, $right) });
-    ($left:expr , $right:expr ,;) => ({ assert_eq!($left, $right) });
-    ($left:expr , $right:expr ; $($arg:tt)+) =>  ({ assert_eq!($left, $right, $($arg)+) });
-    ($left:expr , $right:expr ,; $($arg:tt)+) => ({ assert_eq!($left, $right, $($arg)+) });
+
+    // When only two expressions are compared, use `std::assert_eq!`
+    ($first:expr , $second:expr) =>    ({ assert_eq!($first, $second) });
+    ($first:expr , $second:expr ;) =>  ({ assert_eq!($first, $second) });
+    ($first:expr , $second:expr ,) =>  ({ assert_eq!($first, $second) });
+    ($first:expr , $second:expr ,;) => ({ assert_eq!($first, $second) });
+    ($first:expr , $second:expr ; $($arg:tt)+) =>  ({ assert_eq!($first, $second, $($arg)+) });
+    ($first:expr , $second:expr ,; $($arg:tt)+) => ({ assert_eq!($first, $second, $($arg)+) });
 
     ( $first:expr , $( $x:expr ),+ ;) => ({ assert_all_eq!( $first $( ,$x )+) });
     ( $first:expr , $( $x:expr ),+ ,;) => ({ assert_all_eq!( $first $( ,$x )+) });
