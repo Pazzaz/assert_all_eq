@@ -79,7 +79,7 @@ macro_rules! assert_all_eq {
                     let pad = " ".repeat(index.len());
                     panic!(r#"equality assertion failed at position 0 and {i}
 {pad}0: `{:?}`,
- {i}: `{:?}`: {}"#, left, right, f, pad=pad, i=index);
+ {i}: `{:?}`: {message}"#, left, right, pad=pad, i=index, message=f);
                 }
                 $(
                     b += 1usize;
