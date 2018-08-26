@@ -233,58 +233,46 @@ mod tests {
         );
     }
 
-    // Add this when `refcell_replace_swap` is stable
-    //
-    // use std::cell::RefCell;
-    // #[test]
-    // fn minimum_comparisons() {
-    //     #[derive(Debug, Clone)]
-    //     struct Test<T> {
-    //         inner: T,
-    //         compared: RefCell<usize>,
-    //     }
-    //     impl<T> Test<T> {
-    //         fn new(i: T) -> Test<T> {
-    //             Test {
-    //                 inner: i,
-    //                 compared: RefCell::new(0),
-    //             }
-    //         }
-    //     }
-    //     impl<T> PartialEq<Test<T>> for Test<T>
-    //     where
-    //         T: PartialEq,
-    //     {
-    //         fn eq(&self, other: &Test<T>) -> bool {
-    //             self.compared.replace_with(|&mut old| old + 1);
-    //             other.compared.replace_with(|&mut old| old + 1);
-    //             self.inner == other.inner
-    //         }
-    //     }
-    //     let a = Test::new(1);
-    //     let b = Test::new(1);
-    //     let c = Test::new(1);
-    //     assert_all_eq!(a, b, c);
-    //     let ai = a.compared.into_inner();
-    //     let bi = b.compared.into_inner();
-    //     let ci = c.compared.into_inner();
-    //     assert_eq!(ai + bi + ci, 4);
+    #[test]
+    fn minimum_comparisons() {
+        use std::cell::RefCell;
 
-    //     let a = Test::new(1);
-    //     let b = Test::new(1);
-    //     let c = Test::new(1);
-    //     let d = Test::new(1);
-    //     let e = Test::new(1);
-    //     let f = Test::new(1);
-    //     assert_all_eq!(a, b, c, d, e, f);
-    //     let ai = a.compared.into_inner();
-    //     let bi = b.compared.into_inner();
-    //     let ci = c.compared.into_inner();
-    //     let di = d.compared.into_inner();
-    //     let ei = e.compared.into_inner();
-    //     let fi = f.compared.into_inner();
-    //     assert_eq!(ai + bi + ci + di + ei + fi, 10);
-    // }
+        #[derive(Debug, Clone)]
+        struct Test(u8, RefCell<usize>);
+        impl PartialEq<Test> for Test {
+            fn eq(&self, other: &Test) -> bool {
+                let si = self.1.clone().into_inner();
+                let oi = other.1.clone().into_inner();
+                self.1.replace(si + 1);
+                other.1.replace(oi + 1);
+
+                self.0 == other.0
+            }
+        }
+        let a = Test(1, RefCell::new(0));
+        let b = Test(1, RefCell::new(0));
+        let c = Test(1, RefCell::new(0));
+        assert_all_eq!(a, b, c);
+        let ai = a.1.into_inner();
+        let bi = b.1.into_inner();
+        let ci = c.1.into_inner();
+        assert_eq!(ai + bi + ci, 4);
+
+        let a = Test(1, RefCell::new(0));
+        let b = Test(1, RefCell::new(0));
+        let c = Test(1, RefCell::new(0));
+        let d = Test(1, RefCell::new(0));
+        let e = Test(1, RefCell::new(0));
+        let f = Test(1, RefCell::new(0));
+        assert_all_eq!(a, b, c, d, e, f);
+        let ai = a.1.into_inner();
+        let bi = b.1.into_inner();
+        let ci = c.1.into_inner();
+        let di = d.1.into_inner();
+        let ei = e.1.into_inner();
+        let fi = f.1.into_inner();
+        assert_eq!(ai + bi + ci + di + ei + fi, 10);
+    }
 
     #[test]
     fn two_true_format_zero() {
