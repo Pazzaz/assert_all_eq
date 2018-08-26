@@ -5,7 +5,7 @@
 ///
 /// Like `assert!` and `assert_eq!`, this macro has a second form, where a custom
 /// panic message can be provided. To make parsing possible, `;` is used to seperate
-/// the expressions from the panic message.
+/// the compared expressions from the panic message.
 ///
 /// # Examples
 ///
