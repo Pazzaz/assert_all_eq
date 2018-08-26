@@ -191,7 +191,13 @@ mod tests {
         assert_all_eq!(
             (1..=4).collect::<Vec<_>>().as_slice(),
             &[1, 2, 3, 4],
-            &[1, 2, 3, 4]
+            &[1, 2, 3, 4],
+        );
+        assert_all_eq!(
+            &[1, 2, 3, 4],
+            &[1, 2, 3, 4],
+            (1..=4).collect::<Vec<_>>().as_slice(),
+            &[1, 2, 3, 4],
         );
     }
 
@@ -280,21 +286,26 @@ mod tests {
 
     #[test]
     fn two_true_format_zero() {
+        assert_all_eq!(3, 3, 3; "Message");
         assert_all_eq!(3, 3; "Message");
     }
 
     #[test]
     fn two_true_format_one() {
+        assert_all_eq!(3, 3, 3; "Message: {}", 1212);
         assert_all_eq!(3, 3; "Message: {}", 1212);
     }
     #[test]
     fn two_true_format_two() {
+        assert_all_eq!(3, 3, 3; "Message: {}, {}", 1212, 5454);
         assert_all_eq!(3, 3; "Message: {}, {}", 1212, 5454);
     }
     #[test]
     fn trailing() {
-        assert_all_eq!(3,3,);
-        assert_all_eq!(3,3,;);
-        assert_all_eq!(3,3;);
+        assert_all_eq!(3, 3, 3,);
+        assert_all_eq!(3, 3, 3,;);
+        assert_all_eq!(3, 3, 3;);
+        assert_all_eq!(3, 3,;);
+        assert_all_eq!(3, 3;);
     }
 }
