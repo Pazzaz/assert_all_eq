@@ -29,7 +29,8 @@ macro_rules! assert_all_eq {
     ( $first:expr , $( $x:expr ),+ ;) => ({ assert_all_eq!( $first $( ,$x )+) });
     ( $first:expr , $( $x:expr ),+ ,; $($arg:tt)+) => ({ assert_all_eq!($first $( ,$x )+; $($arg)+) });
     ( $first:expr , $( $x:expr ),+) => ({
-        let a = $first;
+        match &$first {
+            a => {
         let mut b = 0usize;
         let not_eq = |left, right, i| {
             let index = format!("{}", i);
@@ -39,19 +40,23 @@ macro_rules! assert_all_eq {
  {i}: `{:?}`"#, left, right, pad=pad, i=index);
         };
         $(
-        match (&a, &$x) {
+                    match (a, &$x) {
             (left_val, right_val) => {
                 b += 1usize;
                 if !(*left_val == *right_val) {
-                    not_eq(left_val, right_val, b);
+                                not_eq(*left_val, *right_val, b);
                 }
             }
         }
         )*
+
+            }
+        }
     });
 
     ( $first:expr , $( $x:expr ),+; $($arg:tt)+) => ({
-        let a = $first;
+        match &$first {
+            a => {
         let mut b = 0usize;
         let not_eq = |left, right, i| {
             let index = format!("{}", i);
@@ -61,15 +66,17 @@ macro_rules! assert_all_eq {
  {i}: `{:?}`: {}"#, left, right, format_args!($($arg)+), pad=pad, i=index);
         };
         $(
-        match (&a, &$x) {
+                    match (a, &$x) {
             (left_val, right_val) => {
                 b += 1usize;
                 if !(*left_val == *right_val) {
-                    not_eq(left_val, right_val, b);
+                                not_eq(*left_val, *right_val, b);
                 }
             }
         }
         )*
+            }
+        }
     });
 }
 
