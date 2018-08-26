@@ -1,3 +1,4 @@
+#![feature(refcell_replace_swap)]
 /// Asserts that multiple expressions are equal to each other (using [`PartialEq`]).
 ///
 /// On panic, this macro will print the values of the differing expressions with their
@@ -174,6 +175,54 @@ mod tests {
     #[should_panic]
     fn long_false() {
         assert_all_eq!(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+    }
+
+    use std::cell::RefCell;
+
+    #[test]
+    fn minimum_comparisons() {
+        #[derive(Debug, Clone)]
+        struct Test<T> {
+            inner: T,
+            compared: RefCell<usize>,
+        }
+        impl<T> Test<T> {
+            fn new(i: T) -> Test<T> {
+                Test { inner: i, compared: RefCell::new(0) }
+            }
+        }
+        impl<T> PartialEq<Test<T>> for Test<T>
+        where T: PartialEq
+        {
+            fn eq(&self, other: &Test<T>) -> bool {
+                self.compared.replace_with(|&mut old| old + 1);
+                other.compared.replace_with(|&mut old| old + 1);
+                self.inner == other.inner
+            }
+        }
+        let a = Test::new(1);
+        let b = Test::new(1);
+        let c = Test::new(1);
+        assert_all_eq!(a, b, c);
+        let ai = a.compared.into_inner();
+        let bi = b.compared.into_inner();
+        let ci = c.compared.into_inner();
+        assert_eq!(ai+bi+ci, 4);
+
+        let a = Test::new(1);
+        let b = Test::new(1);
+        let c = Test::new(1);
+        let d = Test::new(1);
+        let e = Test::new(1);
+        let f = Test::new(1);
+        assert_all_eq!(a, b, c, d, e, f);
+        let ai = a.compared.into_inner();
+        let bi = b.compared.into_inner();
+        let ci = c.compared.into_inner();
+        let di = d.compared.into_inner();
+        let ei = e.compared.into_inner();
+        let fi = f.compared.into_inner();
+        assert_eq!(ai+bi+ci+di+ei+fi, 10);
     }
 
 }
