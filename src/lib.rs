@@ -35,48 +35,58 @@ macro_rules! assert_all_eq {
     ( $first:expr , $( $x:expr ),+ ;) => ({ assert_all_eq!( $first $( ,$x )+) });
     ( $first:expr , $( $x:expr ),+ ,; $($arg:tt)+) => ({ assert_all_eq!($first $( ,$x )+; $($arg)+) });
     ( $first:expr , $( $x:expr ),+) => ({
+        use std::fmt::Debug;
         match &$first {
             a => {
                 let mut b = 0usize;
-                let not_eq = |left, right, i| {
+                
+                // Seperate function to reduce compile time of macro
+                fn not_eq<A, B>(left: A, right: B, i: usize)
+                where A: Debug,
+                      B: Debug,
+                {
                     let index = format!("{}", i);
                     let pad = " ".repeat(index.len());
                     panic!(r#"equality assertion failed at position 0 and {i}
 {pad}0: `{:?}`,
  {i}: `{:?}`"#, left, right, pad=pad, i=index);
-                };
+                }
                 $(
+                    b += 1usize;
                     match (a, &$x) {
                         (left_val, right_val) => {
-                            b += 1usize;
                             if !(*left_val == *right_val) {
-                                not_eq(*left_val, *right_val, b);
+                                not_eq(left_val, right_val, b);
                             }
                         }
                     }
                 )*
-
             }
         }
     });
 
     ( $first:expr , $( $x:expr ),+; $($arg:tt)+) => ({
+        use std::fmt::Debug;
         match &$first {
             a => {
+                let f = || format!($($arg)+);
                 let mut b = 0usize;
-                let not_eq = |left, right, i| {
+                fn not_eq<A, B>(left: A, right: B, i: usize, f: &str)
+                where A: Debug,
+                      B: Debug,
+                {
                     let index = format!("{}", i);
                     let pad = " ".repeat(index.len());
                     panic!(r#"equality assertion failed at position 0 and {i}
 {pad}0: `{:?}`,
- {i}: `{:?}`: {}"#, left, right, format_args!($($arg)+), pad=pad, i=index);
-                };
+ {i}: `{:?}`: {}"#, left, right, f, pad=pad, i=index);
+                }
                 $(
+                    b += 1usize;
                     match (a, &$x) {
                         (left_val, right_val) => {
-                            b += 1usize;
                             if !(*left_val == *right_val) {
-                                not_eq(*left_val, *right_val, b);
+                                not_eq(left_val, right_val, b, &f());
                             }
                         }
                     }
