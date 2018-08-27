@@ -57,9 +57,9 @@ macro_rules! assert_all_eq {
                 }
                 $(
                     b += 1usize;
-                    match (a, &$x) {
-                        (left_val, right_val) => {
-                            if !(*left_val == *right_val) {
+                    match &$x {
+                        right_val => {
+                            if !(*a == *right_val) {
                                 not_eq(left_val, right_val, b);
                             }
                         }
@@ -87,9 +87,9 @@ macro_rules! assert_all_eq {
                 }
                 $(
                     b += 1usize;
-                    match (a, &$x) {
-                        (left_val, right_val) => {
-                            if !(*left_val == *right_val) {
+                    match &$x {
+                        right_val => {
+                            if !(*a == *right_val) {
                                 not_eq(left_val, right_val, b, &f());
                             }
                         }
